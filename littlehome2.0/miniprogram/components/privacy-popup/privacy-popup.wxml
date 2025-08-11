@@ -1,0 +1,61 @@
+<!--components/privacy-popup/privacy-popup.wxml-->
+<view class="privacy-popup-overlay" wx:if="{{show}}" bindtap="hidePopup">
+  <view class="privacy-popup-content" catchtap="stopPropagation">
+    <!-- 弹窗头部 -->
+    <view class="popup-header">
+      <view class="popup-icon">🔒</view>
+      <text class="popup-title">隐私保护提醒</text>
+      <button class="popup-close" bindtap="hidePopup">×</button>
+    </view>
+
+    <!-- 弹窗内容 -->
+    <view class="popup-body">
+      <view class="feature-info">
+        <text class="feature-title">{{featureTitle}}</text>
+        <text class="feature-desc">{{featureDescription}}</text>
+      </view>
+
+      <!-- 数据收集说明 -->
+      <view class="data-collection">
+        <text class="data-title">此功能将收集以下信息：</text>
+        <view class="data-list">
+          <view class="data-item" wx:for="{{dataTypes}}" wx:key="*this">
+            <text class="data-icon">{{item.icon}}</text>
+            <text class="data-text">{{item.name}}</text>
+            <text class="data-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 隐私承诺 -->
+      <view class="privacy-commitment">
+        <text class="commitment-title">我们的隐私承诺：</text>
+        <view class="commitment-list">
+          <text class="commitment-item">• 所有数据采用端到端加密存储</text>
+          <text class="commitment-item">• 不会在云端存储您的原始内容</text>
+          <text class="commitment-item">• 您可以随时删除所有数据</text>
+          <text class="commitment-item">• 不会向第三方分享您的信息</text>
+        </view>
+      </view>
+
+      <!-- 设置状态 -->
+      <view class="settings-status">
+        <text class="status-title">当前隐私设置状态：</text>
+        <view class="status-list">
+          <view class="status-item" wx:for="{{settingsStatus}}" wx:key="name">
+            <text class="status-name">{{item.name}}</text>
+            <text class="status-value {{item.enabled ? 'enabled' : 'disabled'}}">
+              {{item.enabled ? '已启用' : '已禁用'}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 弹窗底部 -->
+    <view class="popup-footer">
+      <button class="btn btn-outline" bindtap="rejectUse">拒绝</button>
+      <button class="btn btn-primary" bindtap="confirmUse">确认使用</button>
+    </view>
+  </view>
+</view> 
