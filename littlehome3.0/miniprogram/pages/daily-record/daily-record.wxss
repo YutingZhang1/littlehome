@@ -1,0 +1,332 @@
+.calendar-container {
+  margin: 120px 20px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+.back-btn {
+  width: 80rpx;
+  height: 90rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  z-index: 1;
+}
+
+.back-btn image {
+  width: 40rpx;
+  height: 40rpx;
+  transition: transform 0.2s ease;
+  filter: brightness(0) invert(1);
+}
+
+.back-btn:active image {
+  transform: scale(0.9);
+}
+
+.month-selector {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 14px;
+  position: relative;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.day.selected {
+  background: linear-gradient(135deg, #ff9eaa, #9fc3f8);
+  color: white;
+}
+
+.day.has-record {
+  background: rgba(159, 195, 248, 0.1);
+}
+
+.mood-icon {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  bottom: 2px;
+}
+
+.record-detail {
+  margin: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.date-indicators {
+  position: absolute;
+  bottom: 2px;
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  width: 100%;
+}
+
+.indicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+}
+
+.indicator.clockin {
+  background: #ff9eaa;
+}
+
+.indicator.mood {
+  width: 12px;
+  height: 12px;
+  transform: translateY(-4px);
+}
+
+.indicator.mood image {
+  width: 100%;
+  height: 100%;
+}
+
+.indicator.anniversary {
+  background: #9fc3f8;
+}
+
+.records-list {
+  margin-top: 15px;
+}
+
+.record-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(159, 195, 248, 0.1);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.record-item image {
+  width: 24px;
+  height: 24px;
+}
+
+.record-item text {
+  font-size: 14px;
+  color: #666;
+  flex: 1;
+}
+
+.back-btn {
+  position: absolute;
+  left: 20px;
+  color: #fff;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+}
+
+.anniversary-item {
+  position: relative;
+}
+
+.delete-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 18px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.modal-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  width: 80%;
+}
+
+.modal-header {
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.modal-input {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 15px;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #ff9eaa, #9fc3f8);
+  color: white;
+  border: none;
+  border-radius: 20px;
+}
+
+.consecutive-days {
+  font-size: 14px;
+  color: #ff9eaa;
+  background: rgba(255, 158, 170, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.record-time {
+  position: absolute;
+  right: 10px;
+  font-size: 12px;
+  color: #999;
+}
+
+.date-picker {
+  margin-bottom: 15px;
+}
+
+.picker-content {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+}
+
+.picker-label {
+  color: #666;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.picker-value {
+  color: #333;
+  font-size: 14px;
+  flex: 1;
+}
+
+.user-info {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.points {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 15px;
+}
+
+.heart-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* 确保导航栏标题不会与头像重叠 */
+.navbar-title {
+  margin-right: 100px;
+}
+
+.anniversary-list {
+  margin-top: 20rpx;
+  max-height: 300rpx;
+  overflow-y: auto;
+  background: #fff6fa;
+  border-radius: 12rpx;
+  padding: 10rpx;
+}
+.anniversary-item {
+  font-size: 26rpx;
+  color: #e573a7;
+  margin-bottom: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-anniversary-list {
+  margin-top: 20rpx;
+  max-height: 200rpx;
+  overflow-y: auto;
+  background: #fff6fa;
+  border-radius: 12rpx;
+  padding: 10rpx;
+}
+.modal-anniversary-item {
+  font-size: 26rpx;
+  color: #e573a7;
+  margin-bottom: 8rpx;
+} 

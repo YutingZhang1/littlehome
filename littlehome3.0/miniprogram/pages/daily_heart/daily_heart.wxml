@@ -1,0 +1,104 @@
+<!--pages/daily_heart/daily_heart.wxml-->
+<view class="container">
+  <view class="header">
+    <text class="title">日日心意</text>
+    <text class="subtitle">记录每一天的心情</text>
+  </view>
+
+  <view class="content-area">
+    <view class="input-section">
+      <textarea 
+        class="content-input" 
+        placeholder="今天的心情如何？写下你的想法..."
+        value="{{sharedContent}}"
+        bindinput="onInputContent"
+        maxlength="500"
+      ></textarea>
+      <view class="char-count">{{sharedContent.length}}/500</view>
+    </view>
+
+    <!-- 情绪识别区域 -->
+    <view class="emotion-section">
+      <view class="emotion-display">
+        <text class="emotion-label">情绪标签：</text>
+        <text style="padding: 0rpx 0rpx 25rpx 0rpx;  background: rgba(255, 158, 170, 0.2); color: #ff9eaa; border-radius: 25rpx;  font-size: 28rpx; min-width: 140rpx;  font-weight: 100rpx; border: 1rpx solid rgba(255, 158, 170, 0.3); transition: all 0.3s ease;display: flex;box-sizing: border-box;  line-height: 1; white-space: nowrap;" class="emotion-tag {{emotionTag ? 'has-emotion' : ''}}">
+          {{emotionTag || '等待识别...'}}
+        </text>
+      </view>
+      
+      <button 
+        class="analyze-btn {{isLoadingAI ? 'loading' : ''}} {{!sharedContent ? 'disabled' : ''}}"
+        bindtap="analyzeEmotion"
+        disabled="{{isLoadingAI || !sharedContent}}"
+      >
+        <text wx:if="{{!isLoadingAI}}">AI情绪分析</text>
+        <text wx:else>AI识别中...</text>
+      </button>
+      
+      <button 
+        class="ai-history-btn {{aiAnalysisHistory.length === 0 ? 'disabled' : ''}}"
+        bindtap="showAIAnalysisHistory"
+        disabled="{{aiAnalysisHistory.length === 0}}"
+      >
+        <text>AI分析历史</text>
+      </button>
+    </view>
+
+    <view class="action-section">
+      <button class="publish-btn" bindtap="publishContent">
+        {{editingId ? '更新心情' : '记录心情'}}
+      </button>
+      <button class="history-btn" bindtap="showHistory">
+        查看历史
+      </button>
+    </view>
+  </view>
+
+  <!-- 历史记录弹窗 -->
+  <view class="history-modal {{showHistoryModal ? 'show' : ''}}">
+    <view class="history-mask" bindtap="hideHistory"></view>
+    <view class="history-content">
+      <view class="history-header">
+        <text class="history-title">心情历史</text>
+        <text class="history-close" bindtap="hideHistory">×</text>
+      </view>
+      <scroll-view class="history-list" scroll-y>
+        <view class="history-item" wx:for="{{historyList}}" wx:key="id">
+          <view class="history-content-text">{{item.content}}</view>
+          <view class="history-meta">
+            <text class="history-emotion" wx:if="{{item.emotion}}">{{item.emotion}}</text>
+            <text class="history-date">{{item.created_at}}</text>
+          </view>
+          <view class="history-actions">
+            <button class="edit-btn" bindtap="editRecord" data-id="{{item.id}}" data-content="{{item.content}}" data-emotion="{{item.emotion}}">编辑</button>
+            <button class="delete-btn" bindtap="deleteRecord" data-id="{{item.id}}">删除</button>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- AI分析历史弹窗 -->
+  <view class="ai-analysis-modal {{showAIAnalysisModal ? 'show' : ''}}">
+    <view class="ai-analysis-mask" bindtap="hideAIAnalysisHistory"></view>
+    <view class="ai-analysis-content">
+      <view class="ai-analysis-header">
+        <text class="ai-analysis-title">AI分析历史</text>
+        <text class="ai-analysis-close" bindtap="hideAIAnalysisHistory">×</text>
+      </view>
+      <scroll-view class="ai-analysis-list" scroll-y>
+        <view class="ai-analysis-item" wx:for="{{aiAnalysisHistory}}" wx:key="id">
+          <view class="ai-analysis-content-text">{{item.content}}</view>
+          <view class="ai-analysis-meta">
+            <text class="ai-analysis-emotion">{{item.emotion}}</text>
+            <text class="ai-analysis-time">{{item.timestamp}}</text>
+          </view>
+          <button class="reanalyze-btn" bindtap="reanalyzeHistory" data-content="{{item.content}}">重新分析</button>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 分享Canvas（隐藏） -->
+  <canvas canvas-id="shareCanvas" style="position: fixed; top: -1000px; left: -1000px; width: 300px; height: 400px;"></canvas>
+</view> 
