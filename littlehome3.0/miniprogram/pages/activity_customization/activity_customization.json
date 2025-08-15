@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "定制",
+  "navigationBarBackgroundColor": "#E6A4B4",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#FEFBF6",
+  "enablePullDownRefresh": false,
+  "disableScroll": false
+} 
