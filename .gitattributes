@@ -1,0 +1,9 @@
+example.secret filter=git-cryptx diff=git-cryptx
+# 加密三个敏感文件
+littlehome2.0/miniprogram/app.js filter=git-cryptx diff=git-cryptx
+littlehome2.0/miniprogram/envList.js filter=git-cryptx diff=git-cryptx
+littlehome2.0/miniprogram/project.config.json filter=git-cryptx diff=git-cryptx
+
+# 排除 .gitattributes 自身（避免被加密）
+.gitattributes !filter !diff
+
