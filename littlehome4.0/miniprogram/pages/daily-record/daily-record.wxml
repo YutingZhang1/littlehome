@@ -1,0 +1,112 @@
+<view class="custom-navbar">
+  <view class="back-btn" bindtap="goBack">
+    <image src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/back.png" mode="aspectFit"></image>
+  </view>
+</view>
+
+<view class="calendar-container">
+  <view class="month-selector">
+    <text>{{currentMonth}}</text>
+  </view>
+  
+  <view class="weekdays">
+    <text wx:for="{{['日','一','二','三','四','五','六']}}" wx:key="*this">{{item}}</text>
+  </view>
+  
+  <view class="days">
+    <view 
+      wx:for="{{days}}" 
+      wx:key="fullDate"
+      class="day {{item.fullDate === selectedDate ? 'selected' : ''}} {{clockInDates.includes(item.fullDate) ? 'has-clockin' : ''}}"
+      data-date="{{item.fullDate}}"
+      bindtap="selectDate"
+    >
+      <text>{{item.date}}</text>
+      <view class="date-indicators" wx:if="{{item.fullDate}}">
+        <view class="indicator clockin" wx:if="{{clockInDates.includes(item.fullDate)}}"></view>
+        <view class="indicator mood" wx:if="{{moodRecords[item.fullDate]}}">
+          <image src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/emotion/{{moodRecords[item.fullDate]}}" />
+        </view>
+        <view class="indicator anniversary" wx:if="{{checkIsAnniversary(item.fullDate)}}"></view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="record-detail" wx:if="{{selectedDate}}">
+  <view class="date-header">
+    <text>{{selectedDate}}</text>
+    <view class="consecutive-days">连续打卡 {{getConsecutiveDays()}} 天</view>
+    <view class="add-btn" bindtap="showAddAnniversaryModal">添加纪念日</view>
+  </view>
+
+  <view class="records-list">
+    <view class="record-item" wx:if="{{clockInDates.includes(selectedDate)}}">
+      <image src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/clockon.png" />
+      <text>完成打卡</text>
+      <text class="record-time">获得：50g水和30g肥料</text>
+    </view>
+    
+    <view class="record-item" wx:if="{{moodRecords[selectedDate]}}">
+      <image src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/emotion/{{moodRecords[selectedDate]}}" />
+      <text>今日心情</text>
+    </view>
+    
+    <view 
+      class="record-item anniversary-item" 
+      wx:for="{{anniversaries}}" 
+      wx:key="date" 
+      wx:if="{{item.date === selectedDate}}"
+    >
+      <image src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/anniversary.png" />
+      <text>{{item.name}}</text>
+      <view class="delete-btn" catchtap="deleteAnniversary" data-index="{{index}}">×</view>
+    </view>
+  </view>
+</view>
+
+<view class="section">
+  <view class="section-title">纪念日管理</view>
+  <view class="anniversary-list">
+    <view class="anniversary-item" wx:for="{{anniversaries}}" wx:key="id">
+      <text>{{item.title}}：{{item.date}}</text>
+      <button size="mini" catchtap="deleteAnniversary" data-index="{{index}}">删除</button>
+    </view>
+    <view wx:if="{{!anniversaries.length}}">
+      <text>暂无纪念日</text>
+    </view>
+  </view>
+</view>
+
+<view class="modal" wx:if="{{showAddAnniversary}}">
+  <view class="modal-mask" bindtap="hideAddAnniversaryModal"></view>
+  <view class="modal-content">
+    <view class="modal-header">添加纪念日</view>
+    <form bindsubmit="addAnniversary">
+      <picker 
+        mode="date" 
+        value="{{pickerDate}}" 
+        start="2000-01-01" 
+        end="2099-12-31" 
+        bindchange="onDateChange"
+        class="date-picker"
+      >
+        <view class="picker-content">
+          <text class="picker-label">选择日期：</text>
+          <text class="picker-value">{{pickerDate}}</text>
+        </view>
+      </picker>
+      <input name="name" placeholder="请输入纪念日名称" class="modal-input"/>
+      <button form-type="submit" class="submit-btn">确定</button>
+    </form>
+    <!-- 新增：当前所有纪念日列表 -->
+    <view class="modal-anniversary-list">
+      <view class="modal-anniversary-item" wx:for="{{anniversaries}}" wx:key="id">
+        <text>{{item.title}}：{{item.date}}</text>
+      </view>
+      <view wx:if="{{!anniversaries.length}}">
+        <text>暂无纪念日</text>
+      </view>
+    </view>
+  </view>
+</view> 

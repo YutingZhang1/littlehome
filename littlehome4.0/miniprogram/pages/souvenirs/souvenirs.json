@@ -1,0 +1,10 @@
+{
+  "navigationStyle": "custom",
+  "navigationBarTitleText": "纪念品",
+  "navigationBarBackgroundColor": "#E6A4B4",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#FEFBF6",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "onReachBottomDistance": 50
+} 

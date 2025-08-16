@@ -1,0 +1,530 @@
+<view class="custom-navbar">
+
+</view>
+
+<view class="container">
+  <!-- 页面头部 -->
+  <view class="header">
+    <view class="header-content">
+      <text class="header-subtitle">AI智能推荐，为你们的爱情量身定制</text>
+    </view>
+  </view>
+
+  <!-- 标签页切换 -->
+  <view class="tab-container">
+    <view class="tab-item {{currentTab === 'gift' ? 'active' : ''}}" bindtap="switchTab" data-tab="gift">
+      <text class="tab-icon">🎁</text>
+      <text class="tab-text">礼物建议</text>
+    </view>
+    <view class="tab-item {{currentTab === 'activity' ? 'active' : ''}}" bindtap="switchTab" data-tab="activity">
+      <text class="tab-icon">🎯</text>
+      <text class="tab-text">活动建议</text>
+    </view>
+  </view>
+
+  <!-- 天气信息 -->
+  <view class="weather-info" wx:if="{{weatherData.userLocation || weatherData.partnerLocation}}">
+    <view class="weather-item">
+      <text class="weather-location">{{weatherData.userLocation || '我的城市'}}</text>
+      <text class="weather-icon">{{weatherData.userWeather.icon || '🌤️'}}</text>
+      <text class="weather-temp">{{weatherData.userWeather.temperature || '--'}}°C</text>
+    </view>
+    <view class="weather-divider">💕</view>
+    <view class="weather-item">
+      <text class="weather-location">{{weatherData.partnerLocation || '伴侣城市'}}</text>
+      <text class="weather-icon">{{weatherData.partnerWeather.icon || '🌤️'}}</text>
+      <text class="weather-temp">{{weatherData.partnerWeather.temperature || '--'}}°C</text>
+    </view>
+  </view>
+
+  <!-- 提示设置城市信息 -->
+  <view class="weather-tip" wx:if="{{!weatherData.userLocation && !weatherData.partnerLocation}}">
+    <text class="tip-text">💡 设置用户画像中的城市信息，查看两地天气</text>
+  </view>
+
+  <!-- 礼物建议页面 -->
+  <view class="content-section" wx:if="{{currentTab === 'gift'}}">
+    <!-- 用户画像设置 -->
+    <view class="profile-section">
+      <view class="section-header">
+        <text class="section-title">用户画像</text>
+        <text class="section-subtitle">完善信息获得更精准的推荐</text>
+      </view>
+      <button class="profile-btn" bindtap="showProfileForm">
+        <text class="btn-icon">🎨</text>
+        <text class="btn-text">设置用户画像</text>
+      </button>
+    </view>
+
+    <!-- AI个性化推荐 -->
+    <view class="ai-recommendation-section">
+
+      <button class="generate-btn" bindtap="showGiftForm">
+        <text class="btn-icon">🎯</text>
+        <text class="btn-text">开始AI推荐</text>
+      </button>
+    </view>
+  </view>
+
+  <!-- 活动建议页面 -->
+  <view class="content-section" wx:if="{{currentTab === 'activity'}}">
+    <!-- 攻略平台 -->
+    <view class="guide-section">
+      <view class="section-header">
+        <text class="section-title">情侣攻略平台</text>
+        <text class="section-subtitle">精选攻略，让约会更精彩</text>
+      </view>
+      
+      <view class="guide-list">
+        <view class="guide-item" wx:for="{{guides}}" wx:key="id" bindtap="viewGuide" data-id="{{item.id}}">
+          <image class="guide-image" src="{{item.image}}" mode="aspectFill"></image>
+          <view class="guide-info">
+            <view class="guide-header">
+              <text class="guide-title">{{item.title}}</text>
+              <text class="guide-category">{{item.category}}</text>
+            </view>
+            <text class="guide-desc">{{item.description}}</text>
+            <view class="guide-meta">
+              <text class="guide-rating">⭐ {{item.rating}}</text>
+              <text class="guide-views">{{item.views}}次浏览</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- AI个性化活动推荐 -->
+    <view class="ai-recommendation-section">
+      <view class="section-header">
+        <text class="section-title">AI个性化活动推荐</text>
+        <text class="section-subtitle">智能匹配最适合你们的约会活动</text>
+      </view>
+      <button class="generate-btn" bindtap="showActivityForm">
+        <text class="btn-icon">🎯</text>
+        <text class="btn-text">开始AI推荐</text>
+      </button>
+    </view>
+  </view>
+
+
+
+  <!-- 用户画像表单弹窗 -->
+  <view class="modal-overlay" wx:if="{{showProfileForm}}" bindtap="hideProfileForm">
+    <view class="modal-content profile-modal" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">完善用户信息</text>
+        <text class="modal-close" bindtap="hideProfileForm">×</text>
+      </view>
+      
+      <!-- 步骤指示器 -->
+      <view class="step-indicator">
+        <view class="step {{currentFormStep >= 1 ? 'active' : ''}}">基本信息</view>
+        <view class="step {{currentFormStep >= 2 ? 'active' : ''}}">性格兴趣</view>
+        <view class="step {{currentFormStep >= 3 ? 'active' : ''}}">关系信息</view>
+      </view>
+      
+      <view class="modal-body">
+        <!-- 第一步：基本信息 -->
+        <view class="form-step" wx:if="{{currentFormStep === 1}}">
+          <view class="step-title">基本信息</view>
+          
+          <!-- 用户基本信息 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">👤</view>
+              </view>
+              <text class="section-title">我的信息</text>
+            </view>
+            <view class="input-group">
+              <input class="form-input" placeholder="姓名" value="{{userProfile.name}}" bindinput="onUserBasicInfoInput" data-field="name" />
+              <input class="form-input" placeholder="年龄" value="{{userProfile.age}}" bindinput="onUserBasicInfoInput" data-field="age" />
+              <picker class="form-picker" range="{{['女', '男']}}" value="{{userProfile.gender === '女' ? 0 : userProfile.gender === '男' ? 1 : -1}}" bindchange="onUserPickerChange" data-field="gender">
+                <view class="picker-text">{{userProfile.gender || '选择性别'}}</view>
+              </picker>
+              <picker class="form-picker" range="{{regionData.provinces}}" value="{{regionData.provinces.indexOf(userProfile.province) >= 0 ? regionData.provinces.indexOf(userProfile.province) : 0}}" bindchange="onUserPickerChange" data-field="province">
+                <view class="picker-text">{{userProfile.province || '选择省份'}}</view>
+              </picker>
+              <picker class="form-picker" range="{{regionData.cities[userProfile.province] || []}}" value="{{regionData.cities[userProfile.province] && regionData.cities[userProfile.province].indexOf(userProfile.city) >= 0 ? regionData.cities[userProfile.province].indexOf(userProfile.city) : 0}}" bindchange="onUserPickerChange" data-field="city">
+                <view class="picker-text">{{userProfile.city || '选择城市'}}</view>
+              </picker>
+              <picker class="form-picker" range="{{occupationOptions}}" value="{{occupationOptions.indexOf(userProfile.occupation)}}" bindchange="onUserPickerChange" data-field="occupation">
+                <view class="picker-text">{{userProfile.occupation || '选择职业'}}</view>
+              </picker>
+            </view>
+          </view>
+          
+          <!-- 伴侣基本信息 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">💕</view>
+              </view>
+              <text class="section-title">伴侣信息</text>
+            </view>
+            <view class="input-group">
+              <input class="form-input" placeholder="伴侣姓名" value="{{partnerProfile.name}}" bindinput="onPartnerBasicInfoInput" data-field="name" />
+              <input class="form-input" placeholder="伴侣年龄" value="{{partnerProfile.age}}" bindinput="onPartnerBasicInfoInput" data-field="age" />
+              <picker class="form-picker" range="{{['女', '男']}}" value="{{partnerProfile.gender === '女' ? 0 : partnerProfile.gender === '男' ? 1 : -1}}" bindchange="onPartnerPickerChange" data-field="gender">
+                <view class="picker-text">{{partnerProfile.gender || '选择性别'}}</view>
+              </picker>
+              <picker class="form-picker" range="{{regionData.provinces}}" value="{{regionData.provinces.indexOf(partnerProfile.province) >= 0 ? regionData.provinces.indexOf(partnerProfile.province) : 0}}" bindchange="onPartnerPickerChange" data-field="province">
+                <view class="picker-text">{{partnerProfile.province || '选择省份'}}</view>
+              </picker>
+              <picker class="form-picker" range="{{regionData.cities[partnerProfile.province] || []}}" value="{{regionData.cities[partnerProfile.province] && regionData.cities[partnerProfile.province].indexOf(partnerProfile.city) >= 0 ? regionData.cities[partnerProfile.province].indexOf(partnerProfile.city) : 0}}" bindchange="onPartnerPickerChange" data-field="city">
+                <view class="picker-text">{{partnerProfile.city || '选择城市'}}</view>
+              </picker>
+              <picker class="form-picker" range="{{occupationOptions}}" value="{{occupationOptions.indexOf(partnerProfile.occupation)}}" bindchange="onPartnerPickerChange" data-field="occupation">
+                <view class="picker-text">{{partnerProfile.occupation || '选择职业'}}</view>
+              </picker>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 第二步：性格兴趣 -->
+        <view class="form-step" wx:if="{{currentFormStep === 2}}">
+          <view class="step-title">性格与兴趣</view>
+          
+          <!-- 性格特征 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">🎭</view>
+              </view>
+              <text class="section-title">性格特征</text>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">我的性格：</text>
+              <view class="tag-list">
+                <view class="tag {{userProfile.personality.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{userProfile.personalityTags}}" 
+                      wx:key="*this"
+                      bindtap="onPersonalitySelect" 
+                      data-type="user" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">伴侣性格：</text>
+              <view class="tag-list">
+                <view class="tag {{partnerProfile.personality.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{partnerProfile.personalityTags}}" 
+                      wx:key="*this"
+                      bindtap="onPersonalitySelect" 
+                      data-type="partner" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+          </view>
+          
+          <!-- 兴趣爱好 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">🎨</view>
+              </view>
+              <text class="section-title">兴趣爱好</text>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">我的兴趣：</text>
+              <view class="tag-list">
+                <view class="tag {{userProfile.interests.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{userProfile.interestOptions}}" 
+                      wx:key="*this"
+                      bindtap="onInterestSelect" 
+                      data-type="user" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">伴侣兴趣：</text>
+              <view class="tag-list">
+                <view class="tag {{partnerProfile.interests.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{partnerProfile.interestOptions}}" 
+                      wx:key="*this"
+                      bindtap="onInterestSelect" 
+                      data-type="partner" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+          </view>
+          
+          <!-- 生活习惯 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">🌙</view>
+              </view>
+              <text class="section-title">生活习惯</text>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">我的习惯：</text>
+              <view class="tag-list">
+                <view class="tag {{userProfile.lifestyle.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{userProfile.lifestyleOptions}}" 
+                      wx:key="*this"
+                      bindtap="onLifestyleSelect" 
+                      data-type="user" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">伴侣习惯：</text>
+              <view class="tag-list">
+                <view class="tag {{partnerProfile.lifestyle.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{partnerProfile.lifestyleOptions}}" 
+                      wx:key="*this"
+                      bindtap="onLifestyleSelect" 
+                      data-type="partner" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 第三步：关系信息 -->
+        <view class="form-step" wx:if="{{currentFormStep === 3}}">
+          <view class="step-title">关系信息</view>
+          
+          <!-- 恋爱状态 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">💑</view>
+              </view>
+              <text class="section-title">恋爱状态</text>
+            </view>
+            <picker class="form-picker" range="{{relationshipInfo.statusOptions}}" value="{{relationshipInfo.statusOptions.indexOf(relationshipInfo.relationshipStatus)}}" bindchange="onRelationshipPickerChange" data-field="relationshipStatus">
+              <view class="picker-text">{{relationshipInfo.relationshipStatus || '选择恋爱状态'}}</view>
+            </picker>
+            <picker class="form-picker" range="{{relationshipInfo.durationOptions}}" value="{{relationshipInfo.durationOptions.indexOf(relationshipInfo.relationshipDuration)}}" bindchange="onRelationshipPickerChange" data-field="relationshipDuration">
+              <view class="picker-text">{{relationshipInfo.relationshipDuration || '选择恋爱时长'}}</view>
+            </picker>
+            <picker class="form-picker" range="{{relationshipInfo.frequencyOptions}}" value="{{relationshipInfo.frequencyOptions.indexOf(relationshipInfo.meetingFrequency)}}" bindchange="onRelationshipPickerChange" data-field="meetingFrequency">
+              <view class="picker-text">{{relationshipInfo.meetingFrequency || '选择见面频率'}}</view>
+            </picker>
+          </view>
+          
+          <!-- 沟通方式 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">💬</view>
+              </view>
+              <text class="section-title">沟通方式</text>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">选择沟通方式：</text>
+              <view class="tag-list">
+                <view class="tag {{relationshipInfo.communicationMethods.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{relationshipInfo.communicationOptions}}" 
+                      wx:key="*this"
+                      bindtap="onCommunicationSelect" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+          </view>
+          
+          <!-- 日常互动 -->
+          <view class="form-section">
+            <view class="section-header-with-avatar">
+              <view class="avatar-container">
+                <view class="avatar-icon">🎮</view>
+              </view>
+              <text class="section-title">日常互动习惯</text>
+            </view>
+            <view class="tag-group">
+              <text class="tag-label">选择互动方式：</text>
+              <view class="tag-list">
+                <view class="tag {{relationshipInfo.dailyInteractions.includes(item) ? 'selected' : ''}}" 
+                      wx:for="{{relationshipInfo.interactionOptions}}" 
+                      wx:key="*this"
+                      bindtap="onInteractionSelect" 
+                      data-value="{{item}}">{{item}}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+
+        
+        <!-- 表单导航按钮 -->
+        <view class="form-navigation">
+          <button class="nav-btn secondary" wx:if="{{currentFormStep > 1}}" bindtap="prevStep">上一步</button>
+          <button class="nav-btn primary" wx:if="{{currentFormStep < 3}}" bindtap="nextStep">下一步</button>
+          <button class="nav-btn primary" wx:if="{{currentFormStep === 3}}" bindtap="saveAllUserInfo">保存信息</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 礼物推荐表单弹窗 -->
+  <view class="modal-overlay" wx:if="{{showGiftForm}}" bindtap="hideGiftForm">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">生成礼物推荐</text>
+        <text class="modal-close" bindtap="hideGiftForm">×</text>
+      </view>
+      <view class="modal-body">
+        <text class="form-tip">设置预算和场合，AI为您推荐最适合的礼物</text>
+        
+        <!-- 预算输入 -->
+        <view class="form-group">
+          <text class="form-label">预算（积分）</text>
+          <input class="form-input" type="number" placeholder="请输入预算积分" value="{{giftBudget}}" bindinput="onGiftBudgetInput" />
+        </view>
+        
+        <!-- 场合输入 -->
+        <view class="form-group">
+          <text class="form-label">场合</text>
+          <input class="form-input" placeholder="如：生日、纪念日、道歉等" value="{{giftOccasion}}" bindinput="onGiftOccasionInput" />
+        </view>
+        
+        <button class="save-btn" bindtap="generateGiftRecommendations" data-budget="{{giftBudget}}" data-occasion="{{giftOccasion}}">生成推荐</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 活动推荐表单弹窗 -->
+  <view class="modal-overlay" wx:if="{{showActivityForm}}" bindtap="hideActivityForm">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">生成活动推荐</text>
+        <text class="modal-close" bindtap="hideActivityForm">×</text>
+      </view>
+      <view class="modal-body">
+        <text class="form-tip">选择活动类型和预算，AI为您推荐最适合的活动</text>
+        <button class="save-btn" bindtap="generateActivityRecommendations">生成推荐</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 商品详情弹窗 -->
+  <view class="modal-overlay" wx:if="{{selectedProduct}}" bindtap="hideProductDetail">
+    <view class="modal-content product-modal" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">商品详情</text>
+        <text class="modal-close" bindtap="hideProductDetail">×</text>
+      </view>
+      <view class="modal-body">
+        <image class="product-image" style="  width: 10rpx;  height: 10rpx;" src="{{selectedProduct.image}}" mode="aspectFill"></image>
+        <text class="product-name">{{selectedProduct.name}}</text>
+        <view class="product-price">
+                      <view class="product-points-display">
+              <image class="product-points-icon" src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/rice/heart.png" mode="aspectFit"></image>
+              <text class="product-current-points">{{selectedProduct.points}}</text>
+            </view>
+            <text class="product-original-points" wx:if="{{selectedProduct.originalPoints}}">{{selectedProduct.originalPoints}}</text>
+        </view>
+        <text class="product-category">分类: {{selectedProduct.category}}</text>
+        <view class="product-tags">
+          <text class="product-tag" wx:for="{{selectedProduct.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+        <button class="purchase-btn" bindtap="purchaseProduct">立即购买</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 攻略详情弹窗 -->
+  <view class="modal-overlay" wx:if="{{selectedGuide}}" bindtap="hideGuideDetail">
+    <view class="modal-content guide-modal" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">攻略详情</text>
+        <text class="modal-close" bindtap="hideGuideDetail">×</text>
+      </view>
+      <view class="modal-body">
+        <image class="guide-detail-image" src="{{selectedGuide.image}}" mode="aspectFill"></image>
+        <text class="guide-detail-title">{{selectedGuide.title}}</text>
+        <text class="guide-detail-category">{{selectedGuide.category}}</text>
+        <text class="guide-detail-desc">{{selectedGuide.description}}</text>
+        <view class="guide-detail-meta">
+          <text class="guide-detail-rating">⭐ {{selectedGuide.rating}}</text>
+          <text class="guide-detail-views">{{selectedGuide.views}}次浏览</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分享Canvas（隐藏） -->
+  <canvas canvas-id="shareCanvas" style="position: fixed; top: -1000px; left: -1000px; width: 300px; height: 400px;"></canvas>
+
+  <!-- 底部加载状态 -->
+  <view class="bottom-loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">AI正在为您生成推荐...</text>
+  </view>
+
+  <!-- 底部礼物推荐列表 -->
+  <view class="bottom-gift-list" wx:if="{{giftRecommendations.length > 0}}">
+    <view class="list-header">
+      <text class="list-title">🎯 AI为您推荐</text>
+      <text class="list-subtitle">基于预算: {{giftBudget}}积分 | 场合: {{giftOccasion}}</text>
+    </view>
+    
+    <view class="gift-item" wx:for="{{giftRecommendations}}" wx:key="id">
+      <view class="gift-image">
+        <image src="{{item.image}}" mode="aspectFill"></image>
+      </view>
+      <view class="gift-info">
+        <text class="gift-name">{{item.name}}</text>
+        <text class="gift-reason">{{item.reason}}</text>
+        <view class="gift-meta">
+          <view class="price-info">
+            <view class="points-display">
+              <image class="points-icon" src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/rice/heart.png" mode="aspectFit"></image>
+              <text class="current-points">{{item.points}}</text>
+            </view>
+            <text class="original-points" wx:if="{{item.originalPoints}}">{{item.originalPoints}}</text>
+          </view>
+          <view class="rating-info">
+            <text class="rating">⭐ {{item.rating}}</text>
+            <text class="sales">已售{{item.sales}}</text>
+          </view>
+        </view>
+        <view class="gift-actions">
+          <button class="action-btn primary" bindtap="selectProduct" data-id="{{item.id}}">加入购物车</button>
+          <button class="action-btn secondary" bindtap="shareRecommendation" data-type="gift" data-id="{{item.id}}">分享</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部活动推荐列表 -->
+  <view class="bottom-activity-list" wx:if="{{activityRecommendations.length > 0}}">
+    <view class="list-header">
+      <text class="list-title">🎯 AI为您推荐</text>
+      <text class="list-subtitle">基于预算: {{activityBudget}}积分 | 类型: {{activityType}}</text>
+    </view>
+    
+    <view class="activity-item" wx:for="{{activityRecommendations}}" wx:key="id">
+      <view class="activity-image">
+        <image src="{{item.image}}" mode="aspectFill"></image>
+        <view class="activity-type-badge">{{item.type === 'online' ? '线上' : item.type === 'local' ? '本地' : '混合'}}</view>
+      </view>
+      <view class="activity-info">
+        <text class="activity-name">{{item.name}}</text>
+        <text class="activity-desc">{{item.description}}</text>
+        <view class="activity-meta">
+          <view class="duration-info">
+            <text class="duration">⏱️ {{item.duration}}</text>
+            <view class="activity-points-display">
+              <image class="activity-points-icon" src="https://dis-1301530190.cos.ap-nanjing.myqcloud.com/LittlehomePic/rice/heart.png" mode="aspectFit"></image>
+              <text class="activity-points">{{item.points}}</text>
+            </view>
+          </view>
+          <view class="rating-info">
+            <text class="rating">⭐ {{item.rating}}</text>
+            <text class="participants">{{item.participants}}人参与</text>
+          </view>
+        </view>
+        <view class="activity-tags">
+          <text class="activity-tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+        </view>
+        <view class="activity-actions">
+          <button class="action-btn primary" bindtap="bookActivity" data-id="{{item.id}}">立即预订</button>
+          <button class="action-btn secondary" bindtap="shareRecommendation" data-type="activity" data-id="{{item.id}}">分享</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 
